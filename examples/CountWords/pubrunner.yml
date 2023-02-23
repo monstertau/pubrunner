@@ -6,8 +6,8 @@ resources:
       - PUBMED
    test:
       - PUBMED_CUSTOM:
-         pmids: 25155290
-         rename: PUBMED
+         pmids: 15485686,11763009
+         format: bioc
 run:
    - python CountWords.py -i {IN:PUBMED/%.xml} -o {OUT:OUTPUTDIR/%.tsv}
 output: OUTPUTDIR
