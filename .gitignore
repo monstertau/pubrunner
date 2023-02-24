@@ -26,3 +26,6 @@ downloaded/
 /resources/
 /workspace/
 /out/
+
+.idea
+/build

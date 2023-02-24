@@ -12,6 +12,7 @@ import atexit
 import codecs
 from collections import defaultdict
 from Bio import Entrez
+from tqdm import tqdm
 import sys
 
 
@@ -104,9 +105,11 @@ def prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory):
                     f_pmid = open(pmid_fp)
                     data = f_pmid.read().splitlines()
                     chunks = chunk_pmid_list(data, 200)
-                    for i, chunk in enumerate(chunks):
+                    bar = tqdm(chunks, total=len(data))
+                    for i, chunk in enumerate(bar):
                         filename = os.path.join(dirToCreate, 'custom_chunk_%d.xml' % int(i))
                         eutilsToFile('pubmed', ','.join(chunk), filename)
+                        bar.update(200)
                 resInfo = {'format': 'pubmedxml', 'chunkSize': 1}
             elif resName == 'PMCOA_CUSTOM':
                 assert 'pmcids' in projectSettings, 'Must provide pmids when using PMCOA_CUSTOM resource'

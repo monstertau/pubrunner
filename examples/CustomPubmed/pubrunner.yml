@@ -6,5 +6,5 @@ resources:
          pmid_filepath: disease.txt
          format: bioc
 run:
-   - python ../CountWords/CountWords.py -i {IN:PUBMED/%.xml} -o {OUT:OUTPUTDIR/%.tsv}
+   - python ../CountWords/CountWords.py -i {IN:PUBMED_CUSTOM/%.xml} -o {OUT:OUTPUTDIR/%.tsv}
 output: OUTPUTDIR

@@ -13,3 +13,4 @@ drmaa
 pyfiglet
 biopython
 markdown2
+tqdm
