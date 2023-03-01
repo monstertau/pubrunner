@@ -4,6 +4,7 @@ resources:
    custom:
       - PUBMED_CUSTOM:
          pmid_filepath: disease.txt
+         checkpoint_filepath: checkpoint.txt
          format: bioc
 run:
    - python ../CountWords/CountWords.py -i {IN:PUBMED/%.xml} -o {OUT:OUTPUTDIR/%.tsv}

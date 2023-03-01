@@ -111,7 +111,7 @@ def prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory):
             elif resName == 'PMCOA_CUSTOM':
                 assert 'pmcids' in projectSettings, 'Must provide pmids when using PMCOA_CUSTOM resource'
 
-                if "format" in projectSettings:
+              if "format" in projectSettings:
                     dirToCreate = nameToUse + "_UNCONVERTED"
                 else:
                     dirToCreate = nameToUse
