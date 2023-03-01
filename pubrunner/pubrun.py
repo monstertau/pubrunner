@@ -36,7 +36,8 @@ def getResourceLocation(resource):
 
 
 def eutilsToFile(db, id, filename):
-    Entrez.email = "jlever@bcgsc.ca"  # Always tell NCBI who you are
+    Entrez.email = "dungsieuvip2012@gmail.com"  # Always tell NCBI who you are
+    Entrez.api_key = "0e6f43777d9e455406c5d551515d2d524e08"
     handle = Entrez.efetch(db=db, id=id, rettype="gb", retmode="xml")
     with codecs.open(filename, 'w', 'utf-8') as f:
         xml = handle.read()
@@ -66,7 +67,7 @@ def chunk_pmid_list(pmid_list, n=200):
     return [pmid_list[i * n:(i + 1) * n] for i in range((len(pmid_list) + n - 1) // n)]
 
 
-def prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory):
+def prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory, get_resources=True):
     newResourceList = []
     conversions = []
     resourcesWithHashes = []
@@ -94,22 +95,28 @@ def prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory):
                     shutil.rmtree(dirToCreate)
                 os.makedirs(dirToCreate)
 
-                if mode == 'test':
+                if mode == 'test' and get_resources:
                     pmids = str(projectSettings['pmids'])
                     for pmid in pmids.split(','):
                         filename = os.path.join(dirToCreate, '%d.xml' % int(pmid))
                         eutilsToFile('pubmed', pmid, filename)
-                elif mode == 'custom':
+                elif mode == 'custom' and get_resources:
                     pmid_fp = str(projectSettings['pmid_filepath'])
                     assert os.path.exists(pmid_fp), 'Cant find file %s in pmid_filepath' % pmid_fp
                     f_pmid = open(pmid_fp)
                     data = f_pmid.read().splitlines()
                     chunks = chunk_pmid_list(data, 200)
-                    bar = tqdm(chunks, total=len(data))
-                    for i, chunk in enumerate(bar):
+                    bar = tqdm(chunks, total=len(data), desc='Downloading data from pubmed')
+                    i = 0
+                    for chunk in bar:
                         filename = os.path.join(dirToCreate, 'custom_chunk_%d.xml' % int(i))
-                        eutilsToFile('pubmed', ','.join(chunk), filename)
+                        try:
+                            eutilsToFile('pubmed', ','.join(chunk), filename)
+                        except Exception as e:
+                            print(e)
                         bar.update(200)
+                        i += 1
+
                 resInfo = {'format': 'pubmedxml', 'chunkSize': 1}
             elif resName == 'PMCOA_CUSTOM':
                 assert 'pmcids' in projectSettings, 'Must provide pmids when using PMCOA_CUSTOM resource'
@@ -389,7 +396,7 @@ def pubrun(directory, doTest, doCustom, get_resources=True, forceresource_dir=No
 
     preprocessResourceSettings(toolSettings)
 
-    prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory)
+    prepareConversionAndHashingRuns(toolSettings, mode, workingDirectory, get_resources)
 
     resourcesInUse = toolSettings["resources"]['all'] + toolSettings["resources"][mode]
     if get_resources:
